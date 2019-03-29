@@ -1,4 +1,4 @@
-package com.aldrin.hookwithhttp;
+package com.aldrin.hookwithhttp.server;
 
 import android.util.Log;
 
@@ -40,7 +40,7 @@ public class MyServer extends NanoHTTPD {
         String uri = session.getUri();
 
         if (method == Method.GET) {
-            String jsonString = "{\"code\": \"201\",\"msg\": \"Failed, Don`t Support Method GET \",\"data\": {}";
+            String jsonString = "{\"code\": \"201\",\"msg\": \"Failed, Don`t Support Method GET \",\"data\": {}}";
             return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, jsonString);
         }
 
