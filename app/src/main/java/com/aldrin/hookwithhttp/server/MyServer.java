@@ -1,22 +1,49 @@
-package com.aldrin.hookwithhttp.server;
+package com.aldrin.hookwithhttp;
+
+import android.util.Log;
+
+import java.io.IOException;
 
 import fi.iki.elonen.NanoHTTPD;
 
-/**
- * @date 18/12/5
- * @author Aldrin
- * 建立 Http 服务端
- */
 public class MyServer extends NanoHTTPD {
-    public MyServer(int port) {
+
+    private static final String TAG = "MyServer";
+
+    private static volatile MyServer myServer = null;
+
+    public static MyServer getInstance(){
+        if (myServer == null){
+            synchronized (MyServer.class){
+                if (myServer == null){
+                    myServer = new MyServer(8080);
+                }
+            }
+        }
+        return myServer;
+    }
+
+    private MyServer(int port) {
         super(port);
+        try {
+            start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "MyServer: start success");
     }
 
     @Override
     public Response serve(IHTTPSession session) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"code\":\"200\"}");
 
-        return newFixedLengthResponse(builder.toString());
+        Method method = session.getMethod();
+        String uri = session.getUri();
+
+        if (method == Method.GET) {
+            String jsonString = "{\"code\": \"201\",\"msg\": \"Failed, Don`t Support Method GET \",\"data\": {}";
+            return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, jsonString);
+        }
+
+        return super.serve(session);
     }
 }
